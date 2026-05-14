@@ -6,9 +6,25 @@ export function ExpressAdapter(
   getAllClientUseCase,
   getoneClientUseCase,
   updateClientCase,
+
+  registerUserUseCase,
+  loginUserUseCase
 ) {
   const app = express();
   app.use(express.json());
+
+
+app.post("/auth/register", asyncHandler(async (req, res) => {
+    const result = await registerUserUseCase.execute(req.body);
+    res.status(201).json({ success: true, message: "Usuario registrado", data: result });
+  }));
+
+  app.post("/auth/login", asyncHandler(async (req, res) => {
+    const result = await loginUserUseCase.execute(req.body);
+    res.status(200).json({ success: true, message: "Login exitoso", data: result });
+  }));
+
+
 
   // --- REGISTRAR ---
   app.post("/insert/:locality/clients", asyncHandler(  async (req, res) => {

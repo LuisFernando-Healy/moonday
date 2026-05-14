@@ -1,46 +1,60 @@
-import bcrypt from 'bcryptjs'; // hashear contraseñas
-import jwt from 'jsonwebtoken'; //una libreria jwt para tokens de validacion
-import { userModel } from '../../infraestructure/database/Models/user';
+import bcrypt from 'bcryptjs'; 
+import jwt from 'jsonwebtoken'; 
 
 
-export const authservice = {
+export class AuthService {
+    constructor(userRepository) {
+        this.userRepository = userRepository;
+    }
 
-    register : async (userModel) =>{
-        const salt = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash(userModel.password,salt)
+    async register({ username, password, role, associatedClientId }) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
-        const newUser = await userModel.create({
+        // Usamos el repositorio en lugar de userModel directo
+        const newUser = await this.userRepository.save({
             username,
-            password : hashedPassword,
+            password: hashedPassword,
             role,
             associatedClientId
-
-
-        })
+        });
         
-        return { id : newUser._id,  username: newUser.username, role : newUser.role , alma: newUser.username}
-    },
+        return { 
+            id: newUser._id,  
+            username: newUser.username, 
+            password: newUser.password,
+            role: newUser.role 
+        };
+    }
 
-    login: async ({username,password})=>{
-        const user = await userModel.find({
-            username
-        })
+    async login({ username, password }) {
+        const user = await this.userRepository.findByUsername(username);
 
         if(!user){
-            throw new Error ('usuario no encontrado')
+            throw new Error('Usuario no encontrado');
         }
 
-        const isValidPassword = await bcrypt.compare(password,user.password) 
+        const isValidPassword = await bcrypt.compare(password, user.password); 
         if(!isValidPassword){
-            throw new Error ('contrasena incorrecta')
+            throw new Error('Contraseña incorrecta');
         }
 
         const token = jwt.sign({
-            id: user._id, role: user.role,clietId:user.associatedClientId
+            id: user._id, 
+            role: user.role, 
+            clientId: user.associatedClientId
         }, process.env.JWT_SECRET || 'token secreto', {
             expiresIn: "5h"
-        })
-        return {token, user:{username: user.username, role: user.role, associatedClientId: user.associatedClientId}}
-    }
+        });
 
+        return {
+            token, 
+            user: {
+                username: user.username, 
+                password: user.password,
+                role: user.role, 
+                associatedClientId: user.associatedClientId
+            }
+        };
+    }
 }

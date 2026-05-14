@@ -9,7 +9,10 @@ import express from "express";
 import { MongoClientRepository } from './infraestructure/database/MongoClientRepository.js';
 import { SocketService } from './infraestructure/RealTime/SocketService.js';
 import { ExpressAdapter } from './infraestructure/http/ExpressAdapter.js';
-
+//adaptadores de clientes register login
+import { MongoUserRepository } from './infraestructure/database/MongoUserRepository.js';
+import { RegisterUser } from './application/RegisterUser.js';
+import { LoginUser } from './application/LoginUser.js';
 
 //casos de uso
 import { RegisterClient } from './application/RegisterClient.js';
@@ -30,6 +33,8 @@ mongoose.connect(process.env.MONGODB_URI)
 .catch((error) => console.log("error al conectar a mongoDB",error));
 
 const clientRepository = new MongoClientRepository();
+const userRepository = new MongoUserRepository(); 
+
 const httserver = http.createServer();
 const io = new Server(httserver, {
     cors:{ origin: "*"}
@@ -44,7 +49,14 @@ const getAllClient = new GetallClient(clientRepository);
 const getoneClient = new GetoneClient (clientRepository);
 const updateClient = new UpdateClient (clientRepository,socketService);
 
-const apps = ExpressAdapter(registerClientUseCase,deletedClient,getAllClient,getoneClient,updateClient);
+
+//casos de uso para register y login usando el mongoUserRepository
+const registerUserUseCase = new RegisterUser(userRepository);
+const loginUserUseCase = new LoginUser(userRepository);
+
+
+const apps = ExpressAdapter(registerClientUseCase,deletedClient,getAllClient,getoneClient,updateClient,registerUserUseCase,loginUserUseCase);
+
 
 httserver.on("request", apps);
 

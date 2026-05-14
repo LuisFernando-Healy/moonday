@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { clientSchema } from "./MongoClientModel.js";
+import { clientSchema } from "./Models/MongoClientModel.js";
 
 export class MongoClientRepository {
   _getmodel(collectionName) {
