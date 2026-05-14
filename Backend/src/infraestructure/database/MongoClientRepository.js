@@ -14,11 +14,14 @@ export class MongoClientRepository {
       const Model = this._getmodel(locality.toLowerCase());
 
       const mongoClient = new Model ({
-        _id: client.id,
+        clienteId: client.clienteId,
         name: client.name,
         lastname: client.lastname,
         reference: client.reference,
         phone: client.phone,
+        paquete: client.paquete,
+        montoMensual: client.montoMensual,
+        diaDeCorte: client.diaDeCorte,
         active: client.active,
       });
 
@@ -39,21 +42,21 @@ export class MongoClientRepository {
     }
   }
 
-  async delete(id, locality) {
+  async delete(clienteId, locality) {
     try {
       const Model = this._getmodel(locality.toLowerCase());
-      return await Model.findByIdAndDelete(id);
+      return await Model.findByIdAndDelete(clienteId);
     } catch (error) {
       console.error("Error al eliminar cliente", error);
       throw error;
     }
   }
 
-  async getOne(name, locality) {
+  async getOne(clienteId, locality) {
     try {
       const Model = this._getmodel(locality.toLowerCase());
       return await Model.find({
-        name: { $regex: name, $options: "i" },
+        clienteId: { $regex: clienteId, $options: "i" },
       }).limit(5);
     } catch (error) {
       console.error("Error al obtener un cliente", error);
@@ -61,12 +64,12 @@ export class MongoClientRepository {
     }
   }
 
-  async findAndUpdate(name, locality, clientdata) {
+  async findAndUpdate(clienteId, locality, clientdata) {
     try {
       const Model = this._getmodel(locality.toLowerCase());
       return await Model.findOneAndUpdate(
         {
-          name: name,
+          clienteId: clienteId,
         },
         clientdata,
         { new: true },

@@ -4,6 +4,9 @@ import mongoose from "mongoose";
 import dontenv from "dotenv";
 import express from "express";
 
+import { AuthService } from "./domain/services/authservice.js";
+import { AuthController } from "./infraestructure/controllers/authcontoller.js";
+
 
 //adaptadores y repositorios
 import { MongoClientRepository } from './infraestructure/database/MongoClientRepository.js';
@@ -44,7 +47,10 @@ const getAllClient = new GetallClient(clientRepository);
 const getoneClient = new GetoneClient (clientRepository);
 const updateClient = new UpdateClient (clientRepository,socketService);
 
-const apps = ExpressAdapter(registerClientUseCase,deletedClient,getAllClient,getoneClient,updateClient);
+const authService = new AuthService();
+const authController = new AuthController(authService);
+
+const apps = ExpressAdapter(registerClientUseCase,deletedClient,getAllClient,getoneClient,updateClient,authController);
 
 httserver.on("request", apps);
 
