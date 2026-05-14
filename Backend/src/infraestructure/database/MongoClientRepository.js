@@ -21,6 +21,8 @@ export class MongoClientRepository {
         phone: client.phone,
         active: client.active,
       });
+
+      
       console.log("CLIENT RECIBIDO:", client);
       return await mongoClient.save();
     } catch (error) {
@@ -28,6 +30,7 @@ export class MongoClientRepository {
       throw error;
     }
   }
+
 
   async getAll(locality) {
     try {

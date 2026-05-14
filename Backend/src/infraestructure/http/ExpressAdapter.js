@@ -15,6 +15,7 @@ export function ExpressAdapter(
     const locality = req.params.locality.toLowerCase();
     const clientData = req.body;
     const result = await registerClientUseCase.execute(clientData, locality);
+    
 
     res.status(201).json({
       success: true,
