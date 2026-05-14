@@ -25,12 +25,15 @@ export class MongoClientRepository {
         active: client.active,
       });
 
+      
+      console.log("CLIENT RECIBIDO:", client);
       return await mongoClient.save();
     } catch (error) {
       console.error("Error al guardar cliente:", error);
       throw error;
     }
   }
+
 
   async getAll(locality) {
     try {
