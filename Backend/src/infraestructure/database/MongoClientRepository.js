@@ -14,14 +14,14 @@ export class MongoClientRepository {
       const Model = this._getmodel(locality.toLowerCase());
 
       const mongoClient = new Model ({
-        _id: client.id,
+        id: client.id,
         name: client.name,
         lastname: client.lastname,
         reference: client.reference,
         phone: client.phone,
         active: client.active,
       });
-
+      console.log("CLIENT RECIBIDO:", client);
       return await mongoClient.save();
     } catch (error) {
       console.error("Error al guardar cliente:", error);
