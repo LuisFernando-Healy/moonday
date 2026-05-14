@@ -18,5 +18,4 @@ export class Client {
   isValid() {
         return this.clienteId && this.name && this.phone && this.paquete && this.montoMensual !== undefined && this.reference && this.active !== undefined;
     }
-  
 }

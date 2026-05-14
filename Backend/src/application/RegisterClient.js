@@ -1,13 +1,14 @@
 
 import { validateUser } from "./validators/ClientRegister.js";
 export class RegisterClient {
+
   constructor(clientRepository, socketService) {
     this.clientRepository = clientRepository;
     this.socketService = socketService;
   }
 
-  async execute(clientdata, locality) {
-    
+  async execute (clientdata, locality) {
+  
      const cleandataclient = await validateUser(clientdata);
 
       if(!locality || locality.trim() === ""){
@@ -19,4 +20,5 @@ export class RegisterClient {
 
       return savedClient;    
   }
+  
 }

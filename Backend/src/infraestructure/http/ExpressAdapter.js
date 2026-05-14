@@ -49,6 +49,7 @@ export function ExpressAdapter(
     const locality = req.params.locality.toLowerCase();
     const clientData = req.body;
     const result = await registerClientUseCase.execute(clientData, locality);
+    
 
     res.status(201).json({
       success: true,
@@ -61,7 +62,6 @@ export function ExpressAdapter(
   app.delete("/delete/:locality/clients/:clienteId", asyncHandler(async (req, res) => {
     const { clienteId, locality } = req.params; 
     await deletedClientUseCase.execute(clienteId, locality.toLowerCase());
-    
     res.status(200).json({
       success: true,
       message: "cliente eliminado",
