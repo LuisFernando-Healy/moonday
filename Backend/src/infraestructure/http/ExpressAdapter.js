@@ -1,5 +1,10 @@
 import express from "express";
 import {asyncHandler} from "../middlewares/asyncHandler.js";
+import cors from "cors";
+
+import { userModel } from "../database/Models/MongoUserModel.js";
+import bcrypt from "bcrypt";
+
 export function ExpressAdapter(
   registerClientUseCase,
   deletedClientUseCase,
@@ -11,6 +16,9 @@ export function ExpressAdapter(
   loginUserUseCase
 ) {
   const app = express();
+  app.use(cors({
+    origin: "*",
+  }))
   app.use(express.json());
 
 
@@ -41,10 +49,9 @@ app.post("/auth/register", asyncHandler(async (req, res) => {
   }));
 
   // --- ELIMINAR ---
-  app.delete("/delete/:locality/clients/:id", asyncHandler(async (req, res) => {
-    const { id, locality } = req.params; 
-    await deletedClientUseCase.execute(id, locality.toLowerCase());
-    
+  app.delete("/delete/:locality/clients/:clienteId", asyncHandler(async (req, res) => {
+    const { clienteId, locality } = req.params; 
+    await deletedClientUseCase.execute(clienteId, locality.toLowerCase());
     res.status(200).json({
       success: true,
       message: "cliente eliminado",
@@ -84,24 +91,24 @@ app.post("/auth/register", asyncHandler(async (req, res) => {
   }));
 
   // --- ACTUALIZAR ---
-  app.put("/update/:locality/clients/:name", asyncHandler(async (req, res) => {
-    const { name, locality } = req.params;
+  app.put("/update/:locality/clients/:clienteId", asyncHandler(async (req, res) => {
+    const { clienteId, locality } = req.params;
     const clientdata = req.body;
 
    
-    if (!name || !locality || !clientdata || Object.keys(clientdata).length === 0) {
+    if (!clienteId || !locality || !clientdata || Object.keys(clientdata).length === 0) {
       throw new Error("Los datos son incorrectos o están vacíos");
     }
 
     const result = await updateClientCase.execute(
-      name,
+      clienteId,
       locality.toLowerCase(),
       clientdata,
     );
 
     res.status(200).json({
       success: true,
-      message: "Se ha actualizado un usuario",
+      message: "Se ha actualizado el cliente",
       data: result,
     });
   }));
