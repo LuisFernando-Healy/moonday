@@ -4,6 +4,7 @@ import cors from "cors";
 
 import { userModel } from "../database/Models/MongoUserModel.js";
 import bcrypt from "bcrypt";
+import { success } from "zod";
 
 export function ExpressAdapter(
   registerClientUseCase,
@@ -13,7 +14,13 @@ export function ExpressAdapter(
   updateClientCase,
 
   registerUserUseCase,
-  loginUserUseCase
+  loginUserUseCase,
+  updateUserCase,
+  getUserProfileUseCase,
+  registerPaymentUseCase,
+  getPaymentsByMonthUseCase,
+  getAllPaymentsUseCase
+
 ) {
   const app = express();
   app.use(cors({
@@ -32,7 +39,62 @@ app.post("/auth/register", asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, message: "Login exitoso", data: result });
   }));
 
+  app.put("/auth/userUpdate/:username", asyncHandler(async (req, res) => {
+    const {username} = req.params;
+    const result = await updateUserCase.execute(username, req.body);
+    res.status(200).json({
+      success: true,
+      message: "Usuario actualizado",
+      data: result
+    })
+  }));
 
+  app.get("/auth/user/:username", asyncHandler(async (req, res) => {
+    const {username} = req.params;
+    const result = await getUserProfileUseCase.execute(username);
+    res.status(200).json({
+      success: true,
+      message: "Perfil de usuario obtenido",
+      data: result
+    })
+  }))
+
+  //pagos
+  app.post("/payments/register", asyncHandler(async (req, res) => {
+    const result = await registerPaymentUseCase.execute(req.body);
+    res.status(201).json({
+      success: true,
+      message: "Pago registrado",
+      data: result,
+    });
+  }));
+
+  app.get("/payments/:clienteId", asyncHandler(async (req, res) => {
+    const { clienteId } = req.params;
+    const result = await registerPaymentUseCase.execute(clienteId);
+    res.status(200).json({
+      success: true,
+      message: "Pagos obtenidos",
+      data: result,
+    });
+  }));
+
+  app.get("/payments/month/:mes", asyncHandler(async (req, res) => {
+    const { mes } = req.params;
+    const result = await getPaymentsByMonthUseCase.execute(mes);
+    res.status(200).json({
+      success: true,
+      data: result
+    });
+  }));
+
+  app.get("/payments/all/history", asyncHandler(async (req, res) => {
+    const result = await getAllPaymentsUseCase.execute();
+    res.status(200).json({
+      success: true,
+      data: result
+    });
+  }));
 
   // --- REGISTRAR ---
   app.post("/insert/:locality/clients", asyncHandler(  async (req, res) => {

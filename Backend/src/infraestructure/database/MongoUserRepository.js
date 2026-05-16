@@ -7,7 +7,9 @@ export class MongoUserRepository {
             username: userEntity.username,
             password: userEntity.password,
             role: userEntity.role,
-            associatedClientId: userEntity.associatedClientId
+            associatedClientId: userEntity.associatedClientId,
+            fullName: userEntity.fullName,
+            email: userEntity.email
         });
         return await mongoUser.save();
     } catch (error) {
@@ -20,6 +22,14 @@ export class MongoUserRepository {
         return await userModel.findOne({ username });
     } catch (error) {
         throw new Error(`Error al buscar usuario: ${error.message}`);
+    }
+  }
+
+  async update (username, updateData) {
+    try {
+        return await userModel.findOneAndUpdate({ username }, updateData, { new: true });
+    } catch (error) {
+        throw new Error(`Error al actualizar usuario: ${error.message}`);
     }
   }
 }

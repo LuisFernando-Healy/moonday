@@ -16,6 +16,14 @@ import { ExpressAdapter } from './infraestructure/http/ExpressAdapter.js';
 import { MongoUserRepository } from './infraestructure/database/MongoUserRepository.js';
 import { RegisterUser } from './application/RegisterUser.js';
 import { LoginUser } from './application/LoginUser.js';
+import { UpdateUser } from "./application/UpdateUser.js";
+import { GetUserProfile } from "./application/GetUserProfile.js";
+
+//adaptadores de pagos
+import { MongoPaymentRepository } from './infraestructure/database/MongoPaymentRepository.js';
+import { RegisterPayment } from "./application/RegisterPayment.js";
+import { GetPaymentsByMonth } from "./application/GetPaymentsByMonth.js";
+import { GetAllPayments } from "./application/GetAllPayments.js";
 
 //casos de uso
 import { RegisterClient } from './application/RegisterClient.js';
@@ -46,18 +54,39 @@ const io = new Server(httserver, {
 const socketService = new SocketService(io);
 
 // casos de uso usando -- el mongoclient repository
-const registerClientUseCase = new RegisterClient(clientRepository,socketService);
+const registerUserUseCase = new RegisterUser(userRepository);
+const loginUserUseCase = new LoginUser(userRepository);
+const updateUserUseCase = new UpdateUser(userRepository);
+const getUserProfileUseCase = new GetUserProfile(userRepository);
+
+// 2. DESPUÉS instanciamos RegisterClient, pasándole el registerUserUseCase al final
+const registerClientUseCase = new RegisterClient(clientRepository, socketService, registerUserUseCase);
+
+// 3. El resto se queda igual...
 const deletedClient = new DeleteClient(clientRepository,socketService);
 const getAllClient = new GetallClient(clientRepository);
 const getoneClient = new GetoneClient (clientRepository);
 const updateClient = new UpdateClient (clientRepository,socketService);
 
-const registerUserUseCase = new RegisterUser(userRepository);
-const loginUserUseCase = new LoginUser(userRepository);
+const paymentRepository = new MongoPaymentRepository();
+const registerPaymentUseCase = new RegisterPayment(paymentRepository);
+const getPaymentsByMonthUseCase = new GetPaymentsByMonth(paymentRepository);
+const getAllPaymentsUseCase = new GetAllPayments(paymentRepository);
 
-const apps = ExpressAdapter(registerClientUseCase,deletedClient,getAllClient,getoneClient,updateClient,registerUserUseCase,loginUserUseCase);
-
-
+const apps = ExpressAdapter(
+    registerClientUseCase,
+    deletedClient,
+    getAllClient,
+    getoneClient,
+    updateClient,
+    registerUserUseCase,
+    loginUserUseCase,
+    updateUserUseCase,
+    getUserProfileUseCase,
+    registerPaymentUseCase,
+    getPaymentsByMonthUseCase,
+    getAllPaymentsUseCase
+);
 
 httserver.on("request", apps);
 

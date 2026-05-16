@@ -48,7 +48,7 @@ export class MongoClientRepository {
   async delete(clienteId, locality) {
     try {
       const Model = this._getmodel(locality.toLowerCase());
-      return await Model.findByIdAndDelete(clienteId);
+      return await Model.findOneAndDelete({clienteId: clienteId});
     } catch (error) {
       console.error("Error al eliminar cliente", error);
       throw error;

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { type } from "os";
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -20,7 +21,14 @@ const userSchema = new mongoose.Schema({
     ref: "client",
     required: false,
   },
+  fullName: {
+    type: String,
+    default: "Administrador"
+  },
+  email: {
+    type: String,
+    default: ""
+  }
 }, { timestamps:true});
 
 export const userModel = mongoose.model("user", userSchema);
-
