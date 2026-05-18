@@ -1,5 +1,5 @@
 import express from "express";
-import {asyncHandler} from "../middlewares/asyncHandler.js";
+import {asyncHandler} from "../middlewares/asynchandler.js";
 import cors from "cors";
 
 import { userModel } from "../database/Models/MongoUserModel.js";
