@@ -5,19 +5,19 @@ export class DeleteClient {
 
     }
 
-    async execute(id,locality){
+    async execute(clienteId,locality){
 
         
 
-            if(!id || !locality){
+            if(!clienteId || !locality){
             throw new Error ("EL Id y la localidad deben de ser obligarotorias")}
 
-             const deletedclient = await this.clientrepository.delete(id,locality);
+             const deletedclient = await this.clientrepository.delete(clienteId,locality);
              this.socketservice.notify(`Cliente eliminado ${locality.toUpperCase()}`,deletedclient)
 
              return {
                  deleted: true,
-                 id
+                 clienteId
             };
     }
 }
