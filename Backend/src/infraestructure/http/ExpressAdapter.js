@@ -31,6 +31,7 @@ export function ExpressAdapter(
 
 app.post("/auth/register", asyncHandler(async (req, res) => {
     const result = await registerUserUseCase.execute(req.body);
+    console.log("✅ BACKEND: Login exitoso. Generando token para:", result.user.username);
     res.status(201).json({ success: true, message: "Usuario registrado", data: result });
   }));
 
