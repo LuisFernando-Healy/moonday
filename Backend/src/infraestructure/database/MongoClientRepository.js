@@ -48,9 +48,22 @@ export class MongoClientRepository {
   async delete(clienteId, locality) {
     try {
       const Model = this._getmodel(locality.toLowerCase());
-      return await Model.findOneAndDelete({clienteId: clienteId});
+      const clienteArchivado = await Model.findOneAndUpdate(
+        { clienteId: clienteId },
+        { 
+          $set: { 
+            isDeleted: true,
+            active: false
+          } 
+        },
+        { new: true }
+      );
+      if (!clienteArchivado) {
+        throw new Error("Cliente no encontrado para archivar");
+      }
+      return clienteArchivado;
     } catch (error) {
-      console.error("Error al eliminar cliente", error);
+      console.error("Error al archivar cliente (borrado lógico)", error);
       throw error;
     }
   }
